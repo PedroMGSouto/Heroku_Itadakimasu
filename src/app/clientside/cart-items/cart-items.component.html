@@ -1,0 +1,116 @@
+<app-navbar></app-navbar>
+<main class="main">
+  <div class="page-header text-center">
+    <div class="container">
+      <h1 class="page-title">Shopping Cart</h1>
+    </div><!-- End .container -->
+  </div><!-- End .page-header -->
+
+  <div style="margin-top: 30px "></div>
+    <div *ngIf="purchased" class="container" style="text-align: center">
+                    <p class="btn btn-success disabled btn-lg" style="color: white; margin-bottom: 10px; border-radius: 10px;">Your Order(s) were Submitted Succefully!</p>
+                        <br/>
+                    <p class="btn btn-info disabled btn-lg" style="margin-bottom: 10px; border-radius: 10px"><a style="text-decoration: underline; color: white" routerLink="/userprofile">You can check the orders status in your account's 'ORDERS' Tab</a></p>
+    </div>
+  <form id="finish_purchase" method="post" action="/account/shoppingcart/">
+    <div class="page-content">
+      <div class="cart">
+        <div class="container">
+          <div class="row">
+              <ng-template [ngIf]="user_cart_items?.length==0" [ngIfElse]="goCart">
+                <p class="btn btn-danger disabled btn-lg" style="color: white; margin-bottom: 10px; border-radius: 10px;"> Your cart is currently empty! </p>
+              </ng-template>
+
+              <ng-template #goCart>
+                <div class="col-lg-9">
+                      <table class="table table-cart table-mobile">
+                        <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Price</th>
+                          <th>Quantity</th>
+                          <th>Total</th>
+                          <th></th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="tela">
+                        <tr *ngFor="let cart_item of user_cart_items" class="product_row">
+                          <td class="product-col">
+                            <div class="product">
+                              <figure class="product-media">
+                                <a routerLink="/products/details/{{cart_item?.item?.product?.id}}"><img src="assets{{ cart_item?.item?.product?.image }}" alt="Product image"></a>
+                              </figure>
+                              <h3 class="product-title"><a routerLink="/products/details/{{cart_item?.item?.product?.id}}">{{ cart_item?.item?.product?.name }}</a></h3>
+                              <!-- End .product-title -->
+                            </div><!-- End .product -->
+                          </td>
+                          <td class="price-col">${{ cart_item?.item?.price }}</td>
+                          <td class="quantity-col">
+                            <div class="cart-product-quantity">
+                              <input type="hidden" id="item_id" name="item_id[]" value="{{ cart_item?.item?.id }}">
+                              <input type="number"
+                                     class="counter form-control" readonly name="qty[]" value="{{ cart_item?.qty }}" min="1" max="10"
+                                     step="1" data-decimals="0" required>
+                            </div><!-- End .cart-product-quantity -->
+                          </td>
+                          <td class="total-col">${{rowSum(cart_item?.qty,cart_item?.item?.price)}}</td>
+                          <td class="remove-col"><a style="cursor: pointer" (click)="remCart(cart_item?.item?.id)" class="btn-remove"><i
+                            class="icon-close"></i></a></td>
+                        </tr>
+                        </tbody>
+                      </table><!-- End .table table-wishlist -->
+
+                      <div class="cart-bottom">
+                      </div><!-- End .cart-bottom -->
+                  </div><!-- End .col-lg-9 -->
+                  <aside class="col-lg-3">
+                    <div class="summary summary-cart">
+                      <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
+                      <table class="table table-summary">
+                        <tbody>
+                        <tr class="summary-total">
+                          <td>Total:</td>
+                          <td id="total">${{sum}}</td>
+                        </tr><!-- End .summary-total -->
+                        </tbody>
+                      </table><!-- End .table table-summary -->
+                      <!--{{ payment_meth_form }}-->
+                      <div *ngIf="user?.address==null">
+                          <p class="btn btn-danger disabled btn-lg"
+                          style="color: white; margin-bottom: 10px; border-radius: 10px;"> You need to Add an Address in your
+                          account settings first! </p>
+                          <div style="text-align: center">
+                            <p class="btn btn-info disabled btn-lg" style="margin-bottom: 10px; border-radius: 10px"><a
+                              style="text-decoration: underline; color: white" routerLink="/userprofile">Go to the Address Tab</a></p>
+                          </div>
+                      </div>
+                        <div *ngIf="user?.address!=null">
+                           <div *ngIf='test!="none"'>
+                              <p class="btn btn-danger disabled btn-lg"
+                            style="color: white; margin-bottom: 10px; border-radius: 10px;">
+                            Unfortunately {{test}} does not have enough stock :( </p>
+                            <!--<p class="btn btn-success disabled btn-lg"
+                            style="color: white; margin-bottom: 10px; border-radius: 10px;"> However, Products Processed
+                            before {{test}} have been bought Successfuly!</p>-->
+                             <input disabled class="btn btn-outline-primary-2 btn-order btn-block" type="submit" name="buy_prods"
+                             value="CONFIRM PURCHASE"/>
+                          </div>
+                          <div *ngIf='test=="none"'>
+                            <div style="text-align: center">
+                              <button class="btn btn-outline-primary-2 btn-order btn-block" style="cursor: pointer" (click)="order()" name="buy_prods"
+                                      value="CONFIRM PURCHASE">CONFIRM PURCHASE </button>
+                            </div>
+                          </div>
+                        </div>
+
+              </div><!-- End .summary -->
+            </aside><!-- End .col-lg-3 -->
+              </ng-template>
+          </div><!-- End .row -->
+        </div><!-- End .container -->
+      </div><!-- End .cart -->
+    </div><!-- End .page-content -->
+  </form>
+</main><!-- End .main -->
+<app-footer></app-footer>
